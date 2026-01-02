@@ -8,6 +8,7 @@ use bevy::window::PrimaryWindow;
 use bevy_vector_shapes::prelude::*;
 
 pub use crate::context::{Context, DrawContext};
+use crate::context::InputContext;
 use crate::sprite::{render_sprites, SpriteQueue};
 use crate::text::{render_text, TextQueue};
 
@@ -80,9 +81,16 @@ fn internal_game_loop<G: Game>(mut game: NonSendMut<G>, mut engine: EngineContex
 
     // --- UPDATE STEP ---
     {
+        let input_ctx = InputContext {
+            keys: &engine.keys,
+            mouse_buttons: &engine.mouse_buttons,
+            cursor_world_pos,
+        };
+
         let mut ctx = Context {
-            asset_server: &engine.asset_server,
             time: &engine.time,
+            asset_server: &engine.asset_server,
+            input: input_ctx,
         };
 
         if !state.initialized {

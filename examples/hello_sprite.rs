@@ -13,6 +13,8 @@ impl Game for MyGame {
     }
 
     fn update(&mut self, ctx: &mut Context) {
+        // Move with keys
+        if ctx.input.key_down(KeyCode::ArrowRight) { self.player_pos.x += 2.0; }
     }
 
     fn draw(&mut self, ctx: &mut DrawContext) {
