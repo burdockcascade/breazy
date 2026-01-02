@@ -1,4 +1,7 @@
 name: Build Examples
+concurrency:
+  group: build-examples
+  cancel-in-progress: true
 
 on:
   push:
