@@ -1,4 +1,5 @@
 mod context;
+mod text;
 
 use bevy::ecs::system::SystemParam;
 use bevy::prelude::*;
@@ -6,6 +7,7 @@ use bevy::window::PrimaryWindow;
 use bevy_vector_shapes::prelude::*;
 
 pub use crate::context::{Context, DrawContext};
+use crate::text::{render_text, TextQueue};
 
 pub mod prelude {
     pub use crate::{run, AppConfig, Game};
@@ -46,6 +48,7 @@ struct InternalState { initialized: bool }
 pub struct EngineContext<'w, 's> {
     // Graphics
     pub painter: ShapePainter<'w, 's>,
+    pub text_queue: ResMut<'w, TextQueue>,
 
     // Core
     pub time: Res<'w, Time>,
@@ -90,6 +93,7 @@ fn internal_game_loop<G: Game>(mut game: NonSendMut<G>, mut engine: EngineContex
     {
         let mut draw_ctx = DrawContext {
             painter: &mut engine.painter,
+            text_queue: &mut engine.text_queue,
             time: &engine.time,
         };
         game.draw(&mut draw_ctx);
@@ -107,10 +111,12 @@ pub fn run<G: Game>(config: AppConfig, game: G) {
             ..default()
         }))
         .add_plugins(Shape2dPlugin::default())
+        .insert_resource(TextQueue::default())
         .insert_non_send_resource(game)
         .add_systems(Startup, setup_camera)
         .add_systems(Update, (
             internal_game_loop::<G>,
+            render_text,
         ).chain())
         .run();
 }

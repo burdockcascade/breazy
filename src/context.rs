@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy_vector_shapes::prelude::*;
+use crate::text::{TextCommand, TextQueue};
 
 pub struct Context<'a> {
     pub time: &'a Time,
@@ -7,6 +8,7 @@ pub struct Context<'a> {
 
 pub struct DrawContext<'a, 'w, 's> {
     pub painter: &'a mut ShapePainter<'w, 's>,
+    pub text_queue: &'a mut ResMut<'w, TextQueue>,
     pub time: &'a Time,
 }
 
@@ -34,6 +36,26 @@ impl<'a, 'w, 's> DrawContext<'a, 'w, 's> {
         self.painter.thickness = thickness;
         self.painter.circle(radius);
         self.painter.hollow = false;
+    }
+
+    /// Draw simple text using the default font
+    pub fn text(&mut self, text: &str, x: f32, y: f32) {
+        self.text_queue.0.push(TextCommand {
+            text: text.to_string(),
+            position: Vec2::new(x, y),
+            size: 20.0,
+            color: Color::WHITE,
+        });
+    }
+
+    /// Draw text with size and color
+    pub fn text_ext(&mut self, text: &str, x: f32, y: f32, size: f32, color: Color) {
+        self.text_queue.0.push(TextCommand {
+            text: text.to_string(),
+            position: Vec2::new(x, y),
+            size,
+            color,
+        });
     }
 
 }

@@ -12,6 +12,8 @@ impl Game for MyGame {
 
     fn draw(&mut self, ctx: &mut DrawContext) {
 
+        // Draw some text at a fixed position
+        ctx.text("Hello, World!", 0.0, 0.0);
 
         // Draw a Circle that moves
         let x_pos = self.time.sin() * 200.0;
