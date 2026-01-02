@@ -1,14 +1,24 @@
 use bevy::prelude::*;
 use bevy_vector_shapes::prelude::*;
+use crate::sprite::{SpriteCommand, SpriteQueue};
 use crate::text::{TextCommand, TextQueue};
 
 pub struct Context<'a> {
+    pub asset_server: &'a AssetServer,
     pub time: &'a Time,
+}
+
+impl<'a> Context<'a> {
+    /// Load an image from the "assets" folder
+    pub fn load_image(&self, path: &str) -> Handle<Image> {
+        self.asset_server.load(path.to_owned())
+    }
 }
 
 pub struct DrawContext<'a, 'w, 's> {
     pub painter: &'a mut ShapePainter<'w, 's>,
     pub text_queue: &'a mut ResMut<'w, TextQueue>,
+    pub sprite_queue: &'a mut ResMut<'w, SpriteQueue>,
     pub time: &'a Time,
 }
 
@@ -54,6 +64,25 @@ impl<'a, 'w, 's> DrawContext<'a, 'w, 's> {
             text: text.to_string(),
             position: Vec2::new(x, y),
             size,
+            color,
+        });
+    }
+
+    pub fn sprite(&mut self, image: &Handle<Image>, x: f32, y: f32) {
+        self.sprite_queue.0.push(SpriteCommand {
+            image: image.clone(),
+            position: Vec2::new(x, y),
+            scale: Vec2::ONE,
+            color: Color::WHITE,
+        });
+    }
+
+    /// Draw a scaled or tinted sprite
+    pub fn sprite_ext(&mut self, image: &Handle<Image>, x: f32, y: f32, scale: f32, color: Color) {
+        self.sprite_queue.0.push(SpriteCommand {
+            image: image.clone(),
+            position: Vec2::new(x, y),
+            scale: Vec2::splat(scale),
             color,
         });
     }

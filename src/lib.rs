@@ -1,5 +1,6 @@
 mod context;
 mod text;
+mod sprite;
 
 use bevy::ecs::system::SystemParam;
 use bevy::prelude::*;
@@ -7,6 +8,7 @@ use bevy::window::PrimaryWindow;
 use bevy_vector_shapes::prelude::*;
 
 pub use crate::context::{Context, DrawContext};
+use crate::sprite::{render_sprites, SpriteQueue};
 use crate::text::{render_text, TextQueue};
 
 pub mod prelude {
@@ -49,6 +51,7 @@ pub struct EngineContext<'w, 's> {
     // Graphics
     pub painter: ShapePainter<'w, 's>,
     pub text_queue: ResMut<'w, TextQueue>,
+    pub sprite_queue: ResMut<'w, SpriteQueue>,
 
     // Core
     pub time: Res<'w, Time>,
@@ -78,6 +81,7 @@ fn internal_game_loop<G: Game>(mut game: NonSendMut<G>, mut engine: EngineContex
     // --- UPDATE STEP ---
     {
         let mut ctx = Context {
+            asset_server: &engine.asset_server,
             time: &engine.time,
         };
 
@@ -94,6 +98,7 @@ fn internal_game_loop<G: Game>(mut game: NonSendMut<G>, mut engine: EngineContex
         let mut draw_ctx = DrawContext {
             painter: &mut engine.painter,
             text_queue: &mut engine.text_queue,
+            sprite_queue: &mut engine.sprite_queue,
             time: &engine.time,
         };
         game.draw(&mut draw_ctx);
@@ -112,11 +117,13 @@ pub fn run<G: Game>(config: AppConfig, game: G) {
         }))
         .add_plugins(Shape2dPlugin::default())
         .insert_resource(TextQueue::default())
+        .insert_resource(SpriteQueue::default())
         .insert_non_send_resource(game)
         .add_systems(Startup, setup_camera)
         .add_systems(Update, (
             internal_game_loop::<G>,
             render_text,
+            render_sprites,
         ).chain())
         .run();
 }
