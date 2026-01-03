@@ -1,5 +1,5 @@
 # Breazy
-An opinionated, immediate-mode 2D game framework for Rust.
+An opinionated, immediate-mode game framework for Rust.
 
 ## What is it?
 Breazy is a lightweight wrapper around the Bevy Engine designed for creative coding, prototyping, and game jams.
