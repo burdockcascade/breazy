@@ -1,6 +1,6 @@
-name: Build Examples
+name: Build Hello World Example
 concurrency:
-  group: build-examples
+  group: build-hello-world-example
   cancel-in-progress: false
 
 on:
