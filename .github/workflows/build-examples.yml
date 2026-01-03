@@ -1,0 +1,44 @@
+name: Build Examples
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    name: Build Examples (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install Linux Dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwayland-dev libxkbcommon-dev libasound2-dev libudev-dev lld
+      - name: Build (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        env:
+          RUSTFLAGS: "-C link-arg=-fuse-ld=lld"
+        run: cargo build --examples --release --verbose
+      - name: Build (Windows)
+        if: runner.os == 'windows-latest'
+        env:
+          RUSTFLAGS: "-C link-arg=-fuse-ld=lld"
+        run: cargo build --examples --release --features bevy/dynamic_linking --verbose
+      - name: Build (MacOS)
+        if: matrix.os == 'macos-latest'
+        run: cargo build --examples --release --verbose
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
