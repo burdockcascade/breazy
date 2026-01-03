@@ -1,9 +1,19 @@
 # Breasy
-Breazy is an open-source framework designed to make game development in Rust accessible, fast, and fun.
+An opinionated, immediate-mode 2D game framework for Rust.
 
-Built on top of the industry-leading Bevy Engine, Breazy strips away the boilerplate of Entity Component Systems (ECS). Instead of managing queries, plugins, and systems, you get a single Context and a familiar game loop. It combines the raw performance of Bevy with the simplicity of creative coding tools like Processing or Raylib.
+## What is it?
+Breazy is a lightweight wrapper around the Bevy Engine designed for creative coding, prototyping, and game jams.
 
-Whether you are building a prototype, a game jam entry, or learning Rust for the first time, Breazy lets you draw shapes, play sounds, and handle input in just a few lines of code.
+It completely abstracts away the Entity Component System (ECS). Instead of managing Entities, Queries, and Systems, you get a simple, familiar update() and draw() loop. You write the logic, and Breazy handles the batching, pooling, and rendering efficiency under the hood.
+
+## Why use it?
+- No ECS Required: Write standard Rust code. No need to learn Queries, Commands, or Bundles.
+- Immediate Mode API: Draw sprites, shapes, and text with a single function call every frame (e.g., ctx.draw.sprite(...)).
+- Batteries Included: Windowing, Input, Audio, and 2D Physics/Collision preparation are all unified into a single Context. 
+- Powered by Bevy: Underneath the simple API is the industrial-strength Bevy engine, giving you performance and reliability without the boilerplate.
+
+## Current State
+Breazy is in early development. The core immediate-mode drawing API is functional, but many features are still being built out.
 
 ## Example
 ```rust
