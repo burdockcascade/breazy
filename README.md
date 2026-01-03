@@ -7,7 +7,6 @@ Whether you are building a prototype, a game jam entry, or learning Rust for the
 
 ## Example
 ```rust
-use bevy::color::palettes::css;
 use breazy::prelude::*;
 
 struct MyGame {
@@ -23,15 +22,15 @@ impl Game for MyGame {
 
         // Draw a Circle that moves
         let x_pos = self.time.sin() * 200.0;
-        ctx.circle(x_pos, 0.0, 60.0, Color::from(css::RED));
+        ctx.circle(x_pos, 0.0, 60.0, Color::from(RED));
 
         // Draw a static Rectangle
-        ctx.rect(0.0, -200.0, 400.0, 50.0, Color::from(css::BLUE_VIOLET));
+        ctx.rect(0.0, -200.0, 400.0, 50.0, Color::from(BLUE_VIOLET));
         ctx.text("Hello, World!", -0.0, -200.0);
 
         // Draw a Ring that pulses
         let ring_radius = 100.0 + (self.time * 5.0).sin() * 25.0;
-        ctx.ring(x_pos, 0.0, ring_radius, 10.0, Color::from(css::YELLOW));
+        ctx.ring(x_pos, 0.0, ring_radius, 10.0, Color::from(YELLOW));
     }
 }
 

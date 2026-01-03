@@ -17,6 +17,7 @@ pub mod prelude {
     pub use crate::{run, AppConfig, Game};
     pub use crate::{Context, DrawContext};
     pub use bevy::prelude::*;
+    pub use bevy::color::palettes::css::*;
 }
 
 pub struct AppConfig {
