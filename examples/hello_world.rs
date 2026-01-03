@@ -12,8 +12,6 @@ impl Game for MyGame {
 
     fn draw(&mut self, ctx: &mut DrawContext) {
 
-        // Draw some text at a fixed position
-        ctx.text("Hello, World!", 0.0, 0.0);
 
         // Draw a Circle that moves
         let x_pos = self.time.sin() * 200.0;
@@ -21,6 +19,7 @@ impl Game for MyGame {
 
         // Draw a static Rectangle
         ctx.rect(0.0, -200.0, 400.0, 50.0, Color::from(css::BLUE_VIOLET));
+        ctx.text("Hello, World!", -0.0, -200.0);
 
         // Draw a Ring that pulses
         let ring_radius = 100.0 + (self.time * 5.0).sin() * 25.0;

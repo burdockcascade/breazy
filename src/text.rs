@@ -40,7 +40,7 @@ pub fn render_text(
         text.0 = command.text.clone(); // The string content
 
         // Update position
-        transform.translation = Vec3::new(command.position.x, command.position.y, 0.0);
+        transform.translation = Vec3::new(command.position.x, command.position.y, 1.0);
 
         // Update style
         font.font_size = command.size;
@@ -55,7 +55,7 @@ pub fn render_text(
         for command in queue.0.iter().skip(drawn_count) {
             commands.spawn((
                 Text2d::new(command.text.clone()),
-                Transform::from_xyz(command.position.x, command.position.y, 0.0),
+                Transform::from_xyz(command.position.x, command.position.y, 1.0),
                 TextFont {
                     font_size: command.size,
                     ..default()
