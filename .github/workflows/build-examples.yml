@@ -27,5 +27,7 @@ jobs:
           sudo apt-get install -y libwayland-dev libxkbcommon-dev libasound2-dev libudev-dev
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Build
         run: cargo build --examples --verbose
