@@ -1,4 +1,4 @@
-# Breasy
+# Breazy
 An opinionated, immediate-mode 2D game framework for Rust.
 
 ## What is it?
