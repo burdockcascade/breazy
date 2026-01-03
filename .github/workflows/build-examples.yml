@@ -27,18 +27,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libwayland-dev libxkbcommon-dev libasound2-dev libudev-dev lld
-      - name: Build (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        env:
-          RUSTFLAGS: "-C link-arg=-fuse-ld=lld"
-        run: cargo build --examples --release --verbose
-      - name: Build (Windows)
-        if: runner.os == 'Windows'
-        env:
-          RUSTFLAGS: "-C link-arg=-fuse-ld=lld"
-        run: cargo build --examples --release --features bevy/dynamic_linking --verbose
-      - name: Build (MacOS)
-        if: matrix.os == 'macos-latest'
-        run: cargo build --examples --release --verbose
+      - name: Build
+        run: cargo build --examples --verbose
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
