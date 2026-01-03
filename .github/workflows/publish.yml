@@ -5,10 +5,7 @@ permissions:
   pull-requests: write
 
 on:
-  push:
-    branches:
-      - main
-      - master
+  workflow_dispatch:
 
 jobs:
   publish-crate:
