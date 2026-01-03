@@ -6,12 +6,11 @@ struct MyGame {
 }
 
 impl Game for MyGame {
-    fn update(&mut self, _ctx: &mut Context) {
-        self.time += 0.01;
+    fn update(&mut self, ctx: &mut Context) {
+        self.time = ctx.time.elapsed_secs();
     }
 
     fn draw(&mut self, ctx: &mut DrawContext) {
-
 
         // Draw a Circle that moves
         let x_pos = self.time.sin() * 200.0;
@@ -28,15 +27,11 @@ impl Game for MyGame {
 }
 
 fn main() {
-    // 1. Configure
     let config = AppConfig {
         title: "Hello Window".to_string(),
         width: 1280,
         height: 720,
     };
-
     let my_game = MyGame { time: 0.0 };
-
-    // 2. Run
     run(config, my_game);
 }
