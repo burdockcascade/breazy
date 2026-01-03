@@ -2,9 +2,11 @@ use bevy::prelude::*;
 use bevy_vector_shapes::prelude::*;
 use crate::sprite::{SpriteCommand, SpriteQueue};
 use crate::text::{TextCommand, TextQueue};
+use crate::audio::*;
 
 pub struct Context<'a> {
     pub asset_server: &'a AssetServer,
+    pub audio: AudioContext<'a>,
     pub input: InputContext<'a>,
     pub time: &'a Time,
 }
@@ -88,6 +90,31 @@ impl<'a, 'w, 's> DrawContext<'a, 'w, 's> {
         });
     }
 
+}
+
+pub struct AudioContext<'a> {
+    pub(crate) queue: &'a mut AudioQueue,
+    pub(crate) asset_server: &'a AssetServer,
+}
+
+impl<'a> AudioContext<'a> {
+    /// Play a sound file once (Fire and Forget)
+    pub fn play(&mut self, path: &str) {
+        let handle = self.asset_server.load(path.to_owned());
+        self.queue.0.push(AudioCommand {
+            sound: handle,
+            volume: 1.0,
+        });
+    }
+
+    /// Play a sound with specific volume (0.0 to 1.0)
+    pub fn play_vol(&mut self, path: &str, volume: f32) {
+        let handle = self.asset_server.load(path.to_owned());
+        self.queue.0.push(AudioCommand {
+            sound: handle,
+            volume,
+        });
+    }
 }
 
 pub struct InputContext<'a> {
