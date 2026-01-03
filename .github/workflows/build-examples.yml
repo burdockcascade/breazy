@@ -27,7 +27,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libwayland-dev libxkbcommon-dev libasound2-dev libudev-dev lld
-      - name: Build
-        run: cargo build --examples --verbose
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
+      - name: Build
+        run: cargo build --examples --verbose
