@@ -1,4 +1,6 @@
+use bevy::ecs::query::QueryData;
 use bevy::prelude::*;
+use bevy::sprite::Anchor;
 
 // 1. THE COMMAND
 #[derive(Clone)]
@@ -17,36 +19,36 @@ pub struct TextQueue(pub Vec<TextCommand>);
 #[derive(Component)]
 pub struct ImmediateText;
 
-pub fn render_text(
-    mut commands: Commands,
-    mut queue: ResMut<TextQueue>,
-    // Query existing text entities in our pool
-    // We need 'Entity', 'Transform', 'Text', 'TextFont', 'TextColor', 'Visibility'
-    mut query: Query<(
-        Entity,
-        &mut Transform,
-        &mut Text,
-        &mut TextFont,
-        &mut TextColor,
-        &mut Visibility
-    ), With<ImmediateText>>,
-) {
+#[derive(QueryData)]
+#[query_data(mutable)]
+pub struct TextItem {
+    pub entity: Entity,
+    pub transform: &'static mut Transform,
+    pub text: &'static mut Text,
+    pub font: &'static mut TextFont,
+    pub color: &'static mut TextColor,
+    pub layout: &'static mut TextLayout,
+    pub anchor: &'static mut Anchor,
+    pub visibility: &'static mut Visibility,
+}
+
+pub fn render_text(mut commands: Commands, mut queue: ResMut<TextQueue>, mut query: Query<TextItem, With<ImmediateText>>) {
     let mut drawn_count = 0;
 
     // 1. MATCH EXISTING ENTITIES
-    for (command, (_entity, mut transform, mut text, mut font, mut color, mut vis)) in queue.0.iter().zip(query.iter_mut()) {
+    for (command, mut text_item) in queue.0.iter().zip(query.iter_mut()) {
 
         // Update content
-        text.0 = command.text.clone(); // The string content
+        text_item.text.0 = command.text.clone(); // The string content
 
         // Update position
-        transform.translation = Vec3::new(command.position.x, command.position.y, 1.0);
+        text_item.transform.translation = Vec3::new(command.position.x, command.position.y, 1.0);
 
         // Update style
-        font.font_size = command.size;
-        color.0 = command.color;
+        text_item.font.font_size = command.size;
+        text_item.color.0 = command.color;
 
-        *vis = Visibility::Visible;
+        *text_item.visibility = Visibility::Visible;
         drawn_count += 1;
     }
 
@@ -67,8 +69,8 @@ pub fn render_text(
     }
 
     // 3. HIDE UNUSED
-    for (_entity, _transform, _text, _font, _color, mut vis) in query.iter_mut().skip(drawn_count) {
-        *vis = Visibility::Hidden;
+    for mut text_item in query.iter_mut().skip(drawn_count) {
+        *text_item.visibility = Visibility::Hidden;
     }
 
     // 4. CLEAR

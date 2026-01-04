@@ -1,3 +1,4 @@
+use bevy::ecs::query::QueryData;
 use bevy::prelude::*;
 
 #[derive(Clone)]
@@ -14,32 +15,34 @@ pub struct SpriteQueue(pub(crate) Vec<SpriteCommand>);
 #[derive(Component)]
 pub struct ImmediateSprite;
 
-pub fn render_sprites(
-    mut commands: Commands,
-    mut queue: ResMut<SpriteQueue>,
-    // We query all existing pool sprites (mutable so we can move them)
-    mut query: Query<(Entity, &mut Transform, &mut Sprite, &mut Visibility), With<ImmediateSprite>>,
-) {
+#[derive(QueryData)]
+#[query_data(mutable)]
+pub struct SpriteItem {
+    pub entity: Entity,
+    pub transform: &'static mut Transform,
+    pub sprite: &'static mut Sprite,
+    pub visibility: &'static mut  Visibility,
+}
+
+pub fn render_sprites( mut commands: Commands,  mut queue: ResMut<SpriteQueue>, mut query: Query<SpriteItem, With<ImmediateSprite>>) {
     let mut drawn_count = 0;
 
-    // 1. MATCH EXISTING ENTITIES TO COMMANDS
     // We iterate through our pool of entities and the user's commands together
-    for (command, (_entity, mut transform, mut sprite, mut vis)) in queue.0.iter().zip(query.iter_mut()) {
+    for (command, mut sprite_item) in queue.0.iter().zip(query.iter_mut()) {
 
         // Update the entity to match the command
-        transform.translation = command.position.extend(0.0);
-        transform.scale = command.scale.extend(1.0);
-        sprite.image = command.image.clone(); // In Bevy 0.17+ this might be sprite.texture
-        sprite.color = command.color;
+        sprite_item.transform.translation = command.position.extend(0.0);
+        sprite_item.transform.scale = command.scale.extend(1.0);
+        sprite_item.sprite.image = command.image.clone();
+        sprite_item.sprite.color = command.color;
 
         // Make sure it's visible
-        *vis = Visibility::Visible;
+        *sprite_item.visibility = Visibility::Visible;
 
         drawn_count += 1;
     }
 
-    // 2. SPAWN NEW ENTITIES (If we have more commands than entities)
-    // If the user drew 100 sprites but we only have 50 in the pool, spawn 50 more.
+    // If we have more commands than entities in the pool, spawn new ones
     if queue.0.len() > drawn_count {
         for command in queue.0.iter().skip(drawn_count) {
             commands.spawn((
@@ -59,13 +62,11 @@ pub fn render_sprites(
         }
     }
 
-    // 3. HIDE UNUSED ENTITIES
-    // If user drew 5 sprites but we have 100 in the pool, hide the other 95.
-    // (We don't despawn them, so we can reuse them next frame cheaply)
-    for (_entity, _transform, _sprite, mut vis) in query.iter_mut().skip(drawn_count) {
-        *vis = Visibility::Hidden;
+    // Hide any remaining entities in the pool that were not used this frame
+    for mut sprite_item in query.iter_mut().skip(drawn_count) {
+        *sprite_item.visibility = Visibility::Hidden;
     }
 
-    // 4. CLEAR QUEUE
+    // Clear the queue for the next frame
     queue.0.clear();
 }
